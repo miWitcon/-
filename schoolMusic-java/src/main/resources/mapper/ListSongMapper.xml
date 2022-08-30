@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+        "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.javaclimb.music.dao.ListSongMapper">
+    <resultMap id="BaseResultMap" type="com.javaclimb.music.domain.ListSong" >
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="song_id" jdbcType="INTEGER" property="songId"/>
+        <result column="song_list_id" jdbcType="INTEGER" property="songListId"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <association javaType="com.javaclimb.music.domain.Song" property="song">
+            <id column="song_id" jdbcType="INTEGER" property="songId"/>
+            <result column="user_id" jdbcType="INTEGER" property="userId"/>
+            <result column="song_name" jdbcType="VARCHAR" property="songName"/>
+            <result column="pic" jdbcType="VARCHAR" property="pic"/>
+            <result column="url" jdbcType="VARCHAR" property="url"/>
+            <result column="username" jdbcType="VARCHAR" property="username"/>
+            <result column="introduction" jdbcType="VARCHAR" property="introduction"/>
+            <result column="duration" jdbcType="VARCHAR" property="duration"/>
+            <result column="lyric" jdbcType="LONGVARCHAR" property="lyric"/>
+        </association>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        ls.id,
+        ls.song_list_id,
+        ls.create_time,
+        u.user_id,
+        s.introduction,
+        s.duration,
+        s.pic,
+        s.lyric,
+        s.url,
+        s.song_id,
+        u.username,
+        s.song_name
+    </sql>
+
+    <insert id="insert" parameterType="com.javaclimb.music.domain.ListSong">
+        insert into list_song
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="songId != null">
+                song_id,
+            </if>
+            <if test="songListId != null">
+                song_list_id,
+            </if>
+            create_time,
+            state,
+        </trim>
+        <trim prefix=" values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id},
+            </if>
+            <if test="songId != null">
+                #{songId},
+            </if>
+            <if test="songListId != null">
+                #{songListId},
+            </if>
+            now(),
+            1,
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.javaclimb.music.domain.ListSong">
+        update list_song
+        <set>
+            <if test="songId != null">
+                song_id = #{songId},
+            </if>
+            <if test="songListId != null">
+                song_list_id = #{songListId},
+            </if>
+            now(),
+        </set>
+        where id = #{id}
+    </update>
+
+    <update id="delete" parameterType="java.lang.Integer">
+        update list_song
+        set state = 0
+        where id = #{id}
+    </update>
+
+    <update id="deleteBySongIdAndSongListId" parameterType="java.util.HashMap">
+        <foreach collection="list" item="item" separator=";">
+            update list_song
+            set state = 0
+            where song_id=#{item.songId} and song_list_id=#{item.songListId}
+        </foreach>
+    </update>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from list_song
+        where id=#{id}
+        and state = 1
+    </select>
+
+    <select id="allListSong" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from list_song
+        where state = 1
+        order by create_time desc
+    </select>
+
+    <select id="listSongOfSongList" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        SELECT
+            <include refid="Base_Column_List"/>
+        FROM
+            USER u,
+            song s,
+            list_song ls
+        WHERE
+            s.user_id = u.user_id
+            AND s.song_id = ls.song_id
+            AND s.state = 1
+            AND ls.state = 1
+            AND ls.song_list_id = #{songListId}
+    </select>
+
+    <select id="songNoInList" resultMap="BaseResultMap" parameterType="java.util.HashMap">
+        SELECT
+            s.song_id,
+            u.username,
+            s.song_name
+        FROM
+            USER u,
+            song s
+        WHERE
+            s.user_id = u.user_id
+            AND s.state = 1
+            <if test="arg1 != null and arg1 != ''">
+                AND s.song_name like concat('%',#{arg1},'%')
+            </if>
+            <if test="arg2 != null and arg2 != ''">
+                AND u.username like concat('%',#{arg2},'%')
+            </if>
+            AND s.song_id NOT IN ( SELECT song_id FROM list_song WHERE song_list_id = #{arg0} AND state = 1 )
+            ORDER BY s.create_time DESC
+    </select>
+</mapper>

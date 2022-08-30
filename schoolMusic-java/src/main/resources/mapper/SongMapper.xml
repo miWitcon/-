@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+        "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.javaclimb.music.dao.SongMapper">
+    <resultMap id="BaseResultMap" type="com.javaclimb.music.domain.Song" >
+        <id column="song_id" jdbcType="INTEGER" property="songId"/>
+        <result column="user_id" jdbcType="INTEGER" property="userId"/>
+        <result column="song_name" jdbcType="VARCHAR" property="songName"/>
+        <result column="introduction" jdbcType="VARCHAR" property="introduction"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="pic" jdbcType="VARCHAR" property="pic"/>
+        <result column="url" jdbcType="VARCHAR" property="url"/>
+        <result column="duration" jdbcType="VARCHAR" property="duration"/>
+        <result column="username" jdbcType="VARCHAR" property="username"/>
+        <result column="avg_score" jdbcType="FLOAT" property="avgScore"/>
+        <result column="col_num" jdbcType="INTEGER" property="colNum"/>
+        <result column="week" jdbcType="INTEGER" property="week"/>
+        <result column="weekCount" jdbcType="INTEGER" property="weekCount"/>
+<!--        <association property="user" column="user_id" javaType="user">-->
+<!--            <result column="username" property="username" jdbcType="VARCHAR" />-->
+<!--        </association>-->
+    </resultMap>
+
+    <resultMap id="ResultMapWithBLOBs" type="com.javaclimb.music.domain.Song" extends="BaseResultMap">
+        <result column="lyric" jdbcType="LONGVARCHAR" property="lyric"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        song_id,user_id,song_name,introduction,create_time,update_time,pic,lyric,url,duration
+    </sql>
+
+    <sql id="Base_Column_List2">
+        s.song_id,
+        s.user_id,
+        s.song_name,
+        s.introduction,
+        s.create_time,
+        s.update_time,
+        s.pic,
+        s.lyric,
+        s.url,
+        s.duration,
+        u.username
+    </sql>
+
+    <sql id="Blob_Column_List">
+        lyric
+    </sql>
+
+    <insert id="insert" parameterType="com.javaclimb.music.domain.Song">
+        insert into song
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="songId != null">
+                song_id,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="songName != null">
+                song_name,
+            </if>
+            <if test="introduction != null">
+                introduction,
+            </if>
+            create_time,update_time,
+            <if test="pic != null">
+                pic,
+            </if>
+            <if test="lyric != null">
+                lyric,
+            </if>
+            <if test="url != null">
+                url,
+            </if>
+            <if test="duration != null">
+                duration,
+            </if>
+            state,
+        </trim>
+        <trim prefix=" values (" suffix=")" suffixOverrides=",">
+            <if test="songId != null">
+                #{songId},
+            </if>
+            <if test="userId != null">
+                #{userId},
+            </if>
+            <if test="songName != null">
+                #{songName},
+            </if>
+            <if test="introduction != null">
+                #{introduction},
+            </if>
+            now(),now(),
+            <if test="pic != null">
+                #{pic},
+            </if>
+            <if test="lyric != null">
+                #{lyric},
+            </if>
+            <if test="url != null">
+                #{url},
+            </if>
+            <if test="duration != null">
+                #{duration},
+            </if>
+            1,
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.javaclimb.music.domain.Song">
+        update song
+        <set>
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+            <if test="songName != null">
+                song_name = #{songName},
+            </if>
+            <if test="introduction != null">
+                introduction = #{introduction},
+            </if>
+            update_time = now(),
+            <if test="pic != null">
+                pic = #{pic},
+            </if>
+            <if test="lyric != null">
+                lyric = #{lyric},
+            </if>
+            <if test="url != null">
+                url = #{url},
+            </if>
+            <if test="duration != null">
+                duration = #{duration},
+            </if>
+        </set>
+        where song_id = #{songId}
+    </update>
+
+    <update id="delete" parameterType="java.util.List">
+        <foreach collection="list" item="item" separator=";">
+            update song
+            set state = 0
+            where song_id = #{item}
+        </foreach>
+    </update>
+
+    <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List2"/>
+        from song s,user u
+        where s.user_id = u.user_id
+        and s.song_id = #{songId}
+        and s.state =1
+    </select>
+
+    <select id="allSong" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List2"/>
+        from song s,user u
+        where s.user_id = u.user_id
+        and s.state = 1
+        <if test="arg0 != null and arg0 != ''">
+            AND s.song_name like concat('%',#{arg0},'%')
+        </if>
+        <if test="arg1 != null and arg1 != ''">
+            AND u.username like concat('%',#{arg1},'%')
+        </if>
+        order by s.update_time desc
+    </select>
+
+    <select id="songOfName" resultMap="ResultMapWithBLOBs" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from song
+        where song_name = #{songName}
+        and state = 1
+    </select>
+
+    <select id="likeSongOfName" resultMap="ResultMapWithBLOBs" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List2"/>
+        from song s,user u
+        where s.user_id = u.user_id
+        and s.state = 1
+        and (u.username like concat('%',#{name},'%') or s.song_name like concat('%',#{name},'%'))
+        order by s.update_time desc
+    </select>
+
+    <select id="songOfSingerId" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from song
+        where user_id=#{userId}
+        and state = 1
+    </select>
+
+    <select id="avgScoreAndColNum" resultMap="ResultMapWithBLOBs">
+        SELECT
+            s.song_name,
+            s.song_id,
+        CASE
+                WHEN avg( r.score ) IS NULL THEN
+                '0' ELSE ROUND( AVG( r.score ), 2 )
+            END AS avg_score,
+        CASE
+                WHEN c.col_num IS NULL THEN
+                '0' ELSE c.col_num
+            END AS col_num
+        FROM
+            song s
+            LEFT JOIN rank r ON s.song_id = r.song_id
+            LEFT JOIN ( SELECT song_id, count( collect_id ) col_num FROM collect GROUP BY song_id ) c ON s.song_id = c.song_id
+        WHERE
+            s.state = 1
+        GROUP BY
+            s.song_id
+        ORDER BY
+            avg_score DESC
+            LIMIT 10
+    </select>
+
+    <select id="weekUploadNum" resultMap="ResultMapWithBLOBs">
+        SELECT
+            DATE_FORMAT( create_time, '%Y-%u' ) AS WEEK,
+            DATE_FORMAT( date_sub( create_time, INTERVAL dayofweek( create_time )- 2 DAY ), '%Y-%m-%d' ) AS CreateDate,
+            count(*) AS weekCount
+        FROM
+            song
+        GROUP BY
+        WEEK
+        ORDER BY
+        WEEK DESC
+            LIMIT 10
+    </select>
+
+    <select id="songNum" resultType="java.lang.Integer">
+        SELECT COUNT(*) from song where state = 1
+    </select>
+</mapper>

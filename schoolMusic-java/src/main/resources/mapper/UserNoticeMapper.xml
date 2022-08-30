@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+        "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.javaclimb.music.dao.UserNoticeMapper">
+    <resultMap id="BaseResultMap" type="com.javaclimb.music.domain.UserNotice" >
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="isread" jdbcType="TINYINT" property="isread"/>
+        <association javaType="com.javaclimb.music.domain.Notice" property="notice">
+            <id column="notice_id" jdbcType="INTEGER" property="songId"/>
+            <result column="title" jdbcType="VARCHAR" property="title"/>
+            <result column="content" jdbcType="LONGVARCHAR" property="content"/>
+            <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+            <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+            <result column="end_time" jdbcType="TIMESTAMP" property="endTime"/>
+        </association>
+    </resultMap>
+
+    <insert id="insert" parameterType="java.util.HashMap">
+        <foreach collection="arg0" item="item" separator=";">
+            insert into user_notice
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                <if test="arg2 != null">
+                    id,
+                </if>
+                <if test="arg1 != null">
+                    notice_id,
+                </if>
+                <if test="arg0 != null">
+                    user_id,
+                </if>
+                isread,
+                state,
+            </trim>
+            <trim prefix=" values (" suffix=")" suffixOverrides=",">
+                <if test="arg2 != null">
+                    #{arg2},
+                </if>
+                <if test="arg1 != null">
+                    #{arg1},
+                </if>
+                <if test="item != null">
+                    #{item},
+                </if>
+                0,
+                1,
+            </trim>
+        </foreach>
+    </insert>
+
+    <select id="maxNoticeId" resultType="java.lang.Integer">
+        select MAX(notice_id) from notice
+    </select>
+
+    <select id="noticeOfUser" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        SELECT
+            un.id,
+            un.isread,
+            n.title,
+            n.content,
+            n.create_time,
+            n.update_time,
+            n.end_time
+        FROM
+            notice n,
+            user_notice un
+        WHERE
+            n.notice_id = un.notice_id
+            AND n.state = 1
+            AND un.state = 1
+            AND now() > n.update_time
+            AND un.user_id = #{userId}
+            order by n.update_time desc
+    </select>
+
+    <select id="unReadNum" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+        SELECT
+            COUNT(un.id)
+        FROM
+            notice n,
+            user_notice un
+        WHERE
+            n.notice_id = un.notice_id
+            AND n.state = 1
+            AND un.state = 1
+            AND un.isread = 0
+            AND now() > n.update_time
+            AND un.user_id = #{userId}
+    </select>
+
+    <update id="turnRead" parameterType="java.util.List">
+        <foreach collection="list" item="item" separator=";">
+            UPDATE user_notice SET isread = 1 WHERE id = #{item}
+        </foreach>
+    </update>
+
+    <update id="delete" parameterType="java.lang.Integer">
+        update user_notice
+        set state = 0
+        where id=#{id}
+    </update>
+
+</mapper>

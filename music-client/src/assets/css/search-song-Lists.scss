@@ -1,0 +1,11 @@
+@import "var.scss";
+@import "global.scss";
+
+.search-song-Lists {
+  height: 550px !important;
+}
+
+.pagination {
+  @include layout(center);
+  transform: translateY(15px);
+}

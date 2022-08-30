@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+        "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.javaclimb.music.dao.CollectMapper">
+    <resultMap id="BaseResultMap" type="com.javaclimb.music.domain.Collect" >
+        <id column="collect_id" property="collectId" jdbcType="INTEGER" />
+        <result column="user_id" property="userId" jdbcType="INTEGER" />
+        <result column="type" property="type" jdbcType="TINYINT" />
+        <result column="song_id" property="songId" jdbcType="INTEGER" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        collect_id, user_id, type, song_id, create_time
+    </sql>
+
+    <insert id="insert" parameterType="com.javaclimb.music.domain.Collect">
+        insert into collect
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="collectId != null">
+                collect_id,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="type != null">
+                type,
+            </if>
+            <if test="songId != null">
+                song_id,
+            </if>
+            create_time,
+            state,
+        </trim>
+        <trim prefix=" values (" suffix=")" suffixOverrides=",">
+            <if test="collectId != null">
+                #{collectId},
+            </if>
+            <if test="userId != null">
+                #{userId},
+            </if>
+            <if test="type != null">
+                #{type},
+            </if>
+            <if test="songId != null">
+                #{songId},
+            </if>
+            now(),
+            1,
+        </trim>
+    </insert>
+
+    <update id="delete" parameterType="java.lang.Integer">
+        update collect
+        set state = 0
+        where collect_id = #{collectId}
+    </update>
+
+    <update id="deleteByUserIdSongId">
+        update collect
+        set state = 0
+        where user_id = #{userId} and song_id = #{songId}
+    </update>
+
+    <update id="update">
+        update collect
+        set state = 1
+        where user_id = #{userId} and song_id = #{songId}
+    </update>
+
+    <select id="allCollect" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from collect
+        where state = 1
+    </select>
+
+    <select id="collectOfUserId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from collect
+        where user_id = #{userId}
+        and state = 1
+    </select>
+
+    <select id="exitSongId" resultType="java.lang.Integer">
+        select count(*)
+        from collect
+        where user_id = #{userId} and song_id = #{songId}
+        and state = 1
+    </select>
+
+    <select id="isDeleted" resultType="java.lang.Integer">
+        select count(*)
+        from collect
+        where user_id = #{userId} and song_id = #{songId}
+        and state = 0
+    </select>
+</mapper>

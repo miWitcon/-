@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+        "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.javaclimb.music.dao.LikeCommenMapper">
+    <resultMap id="BaseResultMap" type="com.javaclimb.music.domain.LikeComment" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="user_id" property="userId" jdbcType="INTEGER" />
+        <result column="comment_id" property="commentId" jdbcType="INTEGER" />
+        <result column="state" property="state" jdbcType="TINYINT" />
+    </resultMap>
+
+    <insert id="insert" parameterType="com.javaclimb.music.domain.LikeComment">
+        insert into like_comment
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="commentId != null">
+                comment_id,
+            </if>
+            state,
+        </trim>
+        <trim prefix=" values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id},
+            </if>
+            <if test="userId != null">
+                #{userId},
+            </if>
+            <if test="commentId != null">
+                #{commentId},
+            </if>
+            1,
+        </trim>
+    </insert>
+
+    <update id="update">
+        update like_comment
+        set state = 1
+        where user_id = #{arg0}
+            AND comment_id = #{arg1}
+    </update>
+
+    <update id="delete">
+        update like_comment
+        set state = 0
+        where user_id = #{arg0}
+            AND comment_id = #{arg1}
+    </update>
+
+    <select id="select" resultMap="BaseResultMap">
+        SELECT
+            id,
+            user_id,
+            comment_id,
+            state
+        FROM
+            like_comment
+        WHERE
+            user_id = #{arg0}
+            AND comment_id = #{arg1}
+    </select>
+
+    <select id="allLike" resultMap="BaseResultMap">
+        SELECT
+            id,
+            comment_id,
+            state
+        FROM
+            like_comment
+        WHERE
+            user_id = #{userId}
+            AND state = 1
+    </select>
+
+</mapper>

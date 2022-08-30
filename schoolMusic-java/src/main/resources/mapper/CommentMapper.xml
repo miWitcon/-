@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+        "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.javaclimb.music.dao.CommentMapper">
+    <resultMap id="BaseResultMap" type="com.javaclimb.music.domain.Comment" >
+        <id column="comment_id" property="commentId" jdbcType="INTEGER" />
+        <result column="user_id" property="userId" jdbcType="INTEGER" />
+        <result column="song_id" property="songId" jdbcType="INTEGER" />
+        <result column="content" property="content" jdbcType="VARCHAR" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="type" property="type" jdbcType="TINYINT" />
+        <result column="up" property="up" jdbcType="INTEGER" />
+        <result column="username" property="username" jdbcType="VARCHAR" />
+        <result column="avator" property="avator" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        comment_id, user_id, type, song_id, content, create_time, up
+    </sql>
+
+    <insert id="insert" parameterType="com.javaclimb.music.domain.Comment">
+        insert into comment
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="commentId != null">
+                comment_id,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="type != null">
+                type,
+            </if>
+            <if test="songId != null">
+                song_id,
+            </if>
+            <if test="content != null">
+                content,
+            </if>
+            create_time,
+            up,
+            state,
+        </trim>
+        <trim prefix=" values (" suffix=")" suffixOverrides=",">
+            <if test="commentId != null">
+                #{commentId},
+            </if>
+            <if test="userId != null">
+                #{userId},
+            </if>
+            <if test="type != null">
+                #{type},
+            </if>
+            <if test="songId != null">
+                #{songId},
+            </if>
+            <if test="content != null">
+                #{content},
+            </if>
+            now(),
+            0,
+            1,
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.javaclimb.music.domain.Comment">
+        update comment
+        <set>
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+            <if test="type != null">
+                type= #{type},
+            </if>
+            <if test="songId != null">
+                song_id = #{songId},
+            </if>
+            <if test="content != null">
+                content = #{content},
+            </if>
+            <if test="up != null">
+                up = #{up},
+            </if>
+        </set>
+        where comment_id = #{commentId}
+    </update>
+
+    <update id="delete" parameterType="java.util.List">
+        <foreach collection="list" item="item" separator=";">
+            update comment
+            set state = 0
+            where comment_id = #{item}
+        </foreach>
+    </update>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from comment
+        where comment_id = #{commentId}
+        and state = 1
+    </select>
+
+    <select id="allComment" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from comment
+        where state = 1
+    </select>
+
+    <select id="commentOfSongId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+            u.username,
+            u.avator,
+            c.comment_id,
+            c.user_id,
+            c.song_id,
+            c.content,
+            c.create_time,
+            c.type,
+            c.up
+        from user u,comment c
+        where c.user_id = u.user_id
+        and c.song_id = #{songId}
+        and c.state = 1
+        ORDER BY c.create_time DESC
+    </select>
+</mapper>

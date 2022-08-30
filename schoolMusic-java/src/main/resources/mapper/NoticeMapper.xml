@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+        "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.javaclimb.music.dao.NoticeMapper">
+    <resultMap id="BaseResultMap" type="com.javaclimb.music.domain.Notice" >
+        <id column="notice_id" jdbcType="INTEGER" property="noticeId"/>
+        <result column="user_id" jdbcType="INTEGER" property="userId"/>
+        <result column="title" jdbcType="VARCHAR" property="title"/>
+        <result column="content" jdbcType="LONGVARCHAR" property="content"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="end_time" jdbcType="TIMESTAMP" property="endTime"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        notice_id,user_id,title,content,create_time,update_time,end_time
+    </sql>
+
+    <insert id="insert" parameterType="com.javaclimb.music.domain.Notice">
+        insert into notice
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="noticeId != null">
+                notice_id,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="title != null">
+                title,
+            </if>
+            <if test="content != null">
+                content,
+            </if>
+            create_time,
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="endTime != null">
+                end_time,
+            </if>
+            state,
+        </trim>
+        <trim prefix=" values (" suffix=")" suffixOverrides=",">
+            <if test="noticeId != null">
+                #{noticeId},
+            </if>
+            <if test="userId != null">
+                #{userId},
+            </if>
+            <if test="title != null">
+                #{title},
+            </if>
+            <if test="content != null">
+                #{content},
+            </if>
+            now(),
+            <if test="updateTime != null">
+                #{updateTime},
+            </if>
+            <if test="endTime != null">
+                #{endTime},
+            </if>
+            1,
+        </trim>
+    </insert>
+
+    <update id="delete" parameterType="java.util.List">
+        <foreach collection="list" item="item" separator=";">
+            update notice
+            set state = 0
+            where notice_id=#{item}
+        </foreach>
+    </update>
+
+    <update id="update" parameterType="java.util.List">
+        update notice
+        <set>
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+            <if test="title != null">
+                title = #{title},
+            </if>
+            <if test="content != null">
+                content = #{content},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            <if test="endTime != null">
+                end_time = #{endTime},
+            </if>
+        </set>
+        where notice_id = #{noticeId}
+    </update>
+
+    <select id="allNotice" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from notice
+        where state = 1
+        <if test="title != null and title != ''">
+            and title like concat('%',#{title},'%')
+        </if>
+        order by create_time desc
+    </select>
+</mapper>

@@ -1,0 +1,163 @@
+@font-face {
+  font-family: "iconfont"; /* Project id 2819872 */
+  src: url('iconfont.woff2?t=1650607727056') format('woff2'),
+       url('iconfont.woff?t=1650607727056') format('woff'),
+       url('iconfont.ttf?t=1650607727056') format('truetype');
+}
+
+.iconfont {
+  font-family: "iconfont" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.myicon-xiugai-copy:before {
+  content: "\e606";
+}
+
+.myicon-clean:before {
+  content: "\e60d";
+}
+
+.myicon-shijian:before {
+  content: "\e69c";
+}
+
+.myicon-gonggaozhidu:before {
+  content: "\e62b";
+}
+
+.myicon-icon:before {
+  content: "\e6a0";
+}
+
+.myicon-yonghuguanli:before {
+  content: "\e602";
+}
+
+.myicon-gequguanli:before {
+  content: "\e68b";
+}
+
+.myicon-xitongshouye:before {
+  content: "\e600";
+}
+
+.myicon-yinpingedanguanlibeifen:before {
+  content: "\e68d";
+}
+
+.myicon-Play:before {
+  content: "\e624";
+}
+
+.myicon-liebiao:before {
+  content: "\e614";
+}
+
+.myicon-aixin_shixin:before {
+  content: "\eca1";
+}
+
+.myicon-aixin:before {
+  content: "\eca2";
+}
+
+.myicon-shengyin_shiti:before {
+  content: "\eca5";
+}
+
+.myicon-Pause:before {
+  content: "\e625";
+}
+
+.myicon-Prev:before {
+  content: "\e627";
+}
+
+.myicon-Next:before {
+  content: "\e628";
+}
+
+.myicon-Volume:before {
+  content: "\e629";
+}
+
+.myicon-Mute:before {
+  content: "\e62a";
+}
+
+.myicon-aixin_shixin-copy:before {
+  content: "\eca6";
+}
+
+.myicon-shoucang-tianchong-copy:before {
+  content: "\eca7";
+}
+
+.myicon-dianzan-tianchong:before {
+  content: "\e7a7";
+}
+
+.myicon-shoucang-tianchong-copy1:before {
+  content: "\eca8";
+}
+
+.myicon-dianzan:before {
+  content: "\e7a8";
+}
+
+.myicon-shoucang-tianchong:before {
+  content: "\e7a9";
+}
+
+.myicon-shoucang1:before {
+  content: "\e7aa";
+}
+
+.myicon-shanchu:before {
+  content: "\e7b1";
+}
+
+.myicon-shezhi:before {
+  content: "\e7b2";
+}
+
+.myicon-sousuo:before {
+  content: "\e7b3";
+}
+
+.myicon-shangla-yuan-tianchong:before {
+  content: "\e7c4";
+}
+
+.myicon-dianzan-tianchong-copy:before {
+  content: "\eca9";
+}
+
+.myicon-shangla-yuan:before {
+  content: "\e7c5";
+}
+
+.myicon-xiala-yuan-tianchong:before {
+  content: "\e7c6";
+}
+
+.myicon-xiala-yuan:before {
+  content: "\e7c7";
+}
+
+.myicon-yunshangchuan:before {
+  content: "\eb2c";
+}
+
+.myicon-yunxiazai:before {
+  content: "\eb2d";
+}
+
+.myicon-erji:before {
+  content: "\e698";
+}
+

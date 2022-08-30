@@ -1,0 +1,105 @@
+@import "var.scss";
+@import "global.scss";
+
+.play-bar {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  z-index: 100;
+  height: $play-bar-height;
+  transition: all 0.5s;
+  background-color: $color-light-white;
+  // border: 2px solid red;
+  @include box-shadow($box-shadow);//上边框的阴影
+
+  .drop-down {
+    position: absolute;
+    bottom: $play-bar-height + 10px;
+    left: 20px;
+    cursor: pointer;
+    // border: 2px solid red;
+  }
+
+  .kongjian {
+    display: flex;
+    // justify-content: flex-start; //对齐方式=》从行首开始排列
+    align-items: stretch; //元素被拉伸以适应容器
+    flex-direction: row;
+    flex-wrap: nowrap; // 以上5行为设置上下左右居中
+    bottom: 0;
+    height: $play-bar-height;
+    width: 100%;
+    min-width: 1000px;
+    background-color: $theme-play-bar-color;
+    background-size: cover;
+    justify-content: center;
+
+    .item {
+      position: relative;
+      width: 5%;
+      height: 60px;
+      line-height: 80px;
+      text-align: center;
+      cursor: pointer;
+
+      .icon.active {
+        color: red !important;
+      }
+
+      .volume {
+        position: absolute;
+        display: none;
+        height: 100px;
+        top: -($play-bar-height + 50px);
+        right: 15px;
+      }
+
+      .show-volume {
+        display: block;
+      }
+    }
+
+    .item-img {
+      width: $play-bar-height - 10;
+      height: $play-bar-height - 10;
+      align-self: center; //垂直居中,前提是父组件display:flex
+      cursor: pointer;
+      img {
+        border-radius: 5px;
+        width: 100%;
+      }
+    }
+
+    .block {
+      width: 40%;
+      height: $play-bar-height;
+      margin: 0px 15px;
+      text-align: center;
+      align-self: center;
+
+      .slider {
+        display:flex;
+        display:-webkit-flex;/*Safari*/
+        justify-content:space-between;/*水平排布方式*/
+        align-items:center;/*垂直对齐方式*/
+      }
+    }
+  }
+}
+
+.turn {
+  transform: rotate(180deg); //将下拉图标180度调转
+}
+
+.show {
+  bottom: -($play-bar-height);
+}
+
+.show-icon2 {
+  display: none;
+}
+
+.icon {
+  @include icon(20px, $color-grey);
+}
+
